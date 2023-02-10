@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
   res.send('Hello world');
 });
 
-app.use('/role', rbac, rbacRouter);
+app.use('/rbac', rbac, rbacRouter);
 // app.use('/api', protect, apiRouter)
 
 app.listen(PORT, () => {

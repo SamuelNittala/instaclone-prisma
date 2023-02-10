@@ -3,14 +3,34 @@ import { Router } from 'express';
 
 const rbacRouter = Router();
 
-rbacRouter.post('/add/:id', async (req, res) => {
-  console.log(req.body, req.params);
+rbacRouter.post('/role/add/:id/:role', async (req, res) => {
+  const { id , role } = req.params;
+  const { rbac } = res.locals;
   try {
-    console.log(res.locals)
-    res.send(await res.locals.rbac.add_role(req.params.id, req.body)).status(200);
+    res.send(await rbac.add_role(id, role)).status(200);
   } catch (err) {
     res.send({ message: 'error' }).status(400);
   }
 });
+
+rbacRouter.post('/permission/add/:roleOrUser/:permission', async (req, res) => {
+  const { roleOrUser, permission } = req.params;
+  const { rbac } = res.locals;
+  try {
+    res.send(await rbac.add_permission(roleOrUser, permission));
+  } catch (err) {
+    res.send( { message: 'error'}).status(400);
+  }
+})
+
+rbacRouter.get('/permission/check/:roleOrUser/:permission', async (req, res) => {
+  const { roleOrUser, permission } = req.params;
+  const { rbac } = res.locals;
+  try {
+    res.send(await rbac.check_permission(roleOrUser, permission));
+  } catch (err) {
+    res.send( { message: 'error'}).status(400);
+  }
+})
 
 export default rbacRouter;
