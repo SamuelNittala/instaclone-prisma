@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model CasbinRule {
+  id    Int     @id @default(autoincrement())
+  ptype String
+  v0    String?
+  v1    String?
+  v2    String?
+  v3    String?
+  v4    String?
+  v5    String?
+
+  @@map("casbin_rule")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  profile_name String @unique
+  first_name   String
+  last_name    String
+  password     String @db.VarChar(100)
+  posts        Post[]
+
+  followers Follow[] @relation("followers")
+  following Follow[] @relation("following")
+}
+
+model Post {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  title      String
+  user       User        @relation(fields: [user_id], references: [id])
+  user_id    String
+  post_media PostMedia[]
+}
+
+model PostMedia {
+  id String @id @default(uuid())
+
+  post       Post     @relation(fields: [post_id], references: [id])
+  post_id    String
+  postion    Int
+  media_file String
+  Filter     Filter[]
+}
+
+model Follow {
+  following_user_id String
+  followed_user_id  String
+
+  following_user User @relation("followers", fields: [following_user_id], references: [id])
+  followed_user  User @relation("following", fields: [followed_user_id], references: [id])
+
+  @@id([followed_user_id, following_user_id])
+}
+
+model Filter {
+  id String @id @default(uuid())
+
+  filter_name    String @unique
+  filter_details String
+
+  post    PostMedia @relation(fields: [post_id], references: [id])
+  post_id String
+}
+
+model Effect {
+  id          String       @id @default(uuid())
+  effect_name String       @unique
+  PostEffect  PostEffect[]
+}
+
+model PostEffect {
+  effect_id String
+  effect    Effect @relation(fields: [effect_id], references: [id])
+
+  post_media_id String
+  post_media    PostMedia @relation(fields: [post_id], references: [id])
+
+  @@id([effect_id, post_media_id])
+}
