@@ -1,18 +1,5 @@
 import jwt from 'jsonwebtoken';
 
-type UserToken = {
-  id: string;
-  username: string;
-};
-
-export const createToken = (user: UserToken) => {
-  const token = jwt.token(
-    { id: user.id, username: user.username },
-    process.env.JWT_SECRET,
-  );
-  return token;
-};
-
 export const protect = (req, res, next) => {
   const bearer = req.headers.authorization;
   if (!bearer) {
